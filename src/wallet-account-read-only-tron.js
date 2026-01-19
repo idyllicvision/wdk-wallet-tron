@@ -81,13 +81,11 @@ export default class WalletAccountReadOnlyTron extends WalletAccountReadOnly {
    * @returns {Promise<boolean>} True if the signature is valid.
    */
   async verify (message, signature) {
-    const tronWeb = this._tronWeb || new TronWeb({ fullHost: 'https://api.trongrid.io' })
-
-    const recoveredAddress = await tronWeb.trx.verifyMessageV2(message, signature)
-
-    if (!recoveredAddress) {
-      return false
+    if (!this._tronWeb) {
+      throw new Error('The wallet must be connected to tron web to verify signatures.')
     }
+
+    const recoveredAddress = await this._tronWeb.trx.verifyMessageV2(message, signature)
 
     const accountAddress = await this.getAddress()
     return recoveredAddress.toLowerCase() === accountAddress.toLowerCase()
