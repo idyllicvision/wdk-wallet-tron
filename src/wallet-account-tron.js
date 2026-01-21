@@ -138,17 +138,15 @@ export default class WalletAccountTron extends WalletAccountReadOnlyTron {
   async sign (message) {
     const messageBytes = Buffer.from(message, 'utf8')
     const prefix = Buffer.from(`\x19TRON Signed Message:\n${messageBytes.length}`, 'utf8')
-    const prefixedMessage = Buffer.concat([prefix, messageBytes])
-    const messageHash = keccak_256(prefixedMessage)
+    const messageWithPrefixBytes = Buffer.concat([prefix, messageBytes])
+    const hash = keccak_256(messageWithPrefixBytes)
 
-    const signature = secp256k1.sign(messageHash, this._account.privateKey)
+    const signature = secp256k1.sign(hash, this._account.privateKey)
+    const signatureWithRecovery = new Uint8Array([ ...signature.toCompactRawBytes(), 27 + signature.recovery ])
+    const hex = Buffer.from(signatureWithRecovery).toString('hex')
 
-    const fullSignature = new Uint8Array(65)
-    fullSignature.set(signature.toCompactRawBytes(), 0)
-    fullSignature[64] = 27 + signature.recovery
-
-    return '0x' + Buffer.from(fullSignature).toString('hex')
-  } 
+    return '0x' + hex
+  }
 
   /**
    * Sends a transaction.
