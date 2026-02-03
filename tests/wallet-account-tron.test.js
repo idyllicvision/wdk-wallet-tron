@@ -15,7 +15,6 @@ const ACCOUNT = {
   }
 }
 
-// Mocks
 const sendTrxMock = jest.fn()
 const sendRawTransactionMock = jest.fn()
 const getAccountResourcesMock = jest.fn()
@@ -248,9 +247,8 @@ describe('WalletAccountTron', () => {
       const readOnlyAccount = await account.toReadOnlyAccount()
       expect(readOnlyAccount).toBeInstanceOf(WalletAccountReadOnlyTron)
 
-      const address = await account.getAddress()
       const readOnlyAddress = await readOnlyAccount.getAddress()
-      expect(readOnlyAddress).toBe(address)
+      expect(readOnlyAddress).toBe(ACCOUNT.address)
     })
   })
 })

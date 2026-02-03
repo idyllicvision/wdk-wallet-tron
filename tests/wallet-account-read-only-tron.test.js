@@ -27,7 +27,6 @@ jest.unstable_mockModule('tronweb', () => {
     return provider
   })
 
-  // Copy static properties
   Object.assign(MockTronWeb, RealTronWeb)
   MockTronWeb.address = RealTronWeb.address
 
