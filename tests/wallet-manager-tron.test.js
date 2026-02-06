@@ -1,20 +1,20 @@
 import { afterEach, beforeEach, describe, expect, jest, test } from '@jest/globals'
 
+import TronWeb from 'tronweb'
+
 const SEED_PHRASE = 'cook voyage document eight skate token alien guide drink uncle term abuse'
 
 const getChainParametersMock = jest.fn()
 
 jest.unstable_mockModule('tronweb', () => {
-  const RealTronWeb = jest.requireActual('tronweb')
-  const MockTronWeb = jest.fn().mockImplementation((options) => {
-    const provider = new RealTronWeb(options)
-
-    provider.trx.getChainParameters = getChainParametersMock
-
-    return provider
+  const MockTronWeb = jest.fn().mockReturnValue({
+    trx: {
+      getChainParameters: getChainParametersMock
+    }
   })
-  Object.assign(MockTronWeb, RealTronWeb)
-  MockTronWeb.address = RealTronWeb.address
+
+  MockTronWeb.address = TronWeb.address
+
   return { default: MockTronWeb }
 })
 
