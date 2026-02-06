@@ -184,14 +184,14 @@ describe('WalletAccountTron', () => {
       expect(triggerSmartContractMock).toHaveBeenCalledWith(
         TRANSFER.token,
         'transfer(address,uint256)',
-        expect.objectContaining({
+        {
           feeLimit: 4_200_000,
           callValue: 0
-        }),
-        expect.arrayContaining([
-          expect.objectContaining({ type: 'address' }),
-          expect.objectContaining({ type: 'uint256', value: TRANSFER.amount })
-        ]),
+        },
+        [
+          { type: 'address', value: TronWeb.address.toHex(TRANSFER.recipient) },
+          { type: 'uint256', value: TRANSFER.amount }
+        ],
         TronWeb.address.toHex(ACCOUNT.address)
       )
       
