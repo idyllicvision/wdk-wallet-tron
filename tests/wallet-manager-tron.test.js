@@ -40,8 +40,6 @@ describe('WalletManagerTron', () => {
       expect(account).toBeInstanceOf(WalletAccountTron)
 
       expect(account.path).toBe("m/44'/195'/0'/0/0")
-
-      account.dispose()
     })
 
     test('should return the account at the given index', async () => {
@@ -50,8 +48,6 @@ describe('WalletManagerTron', () => {
       expect(account).toBeInstanceOf(WalletAccountTron)
 
       expect(account.path).toBe("m/44'/195'/0'/0/3")
-
-      account.dispose()
     })
 
     test('should throw if the index is a negative number', async () => {
@@ -67,8 +63,6 @@ describe('WalletManagerTron', () => {
       expect(account).toBeInstanceOf(WalletAccountTron)
 
       expect(account.path).toBe("m/44'/195'/1'/2/3")
-
-      account.dispose()
     })
 
     test('should throw if the path is invalid', async () => {

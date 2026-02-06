@@ -64,7 +64,7 @@ describe('WalletAccountTron', () => {
   })
 
   afterEach(() => {
-    if (account) account.dispose()
+    account.dispose()
   })
 
   describe('constructor', () => {
@@ -80,7 +80,11 @@ describe('WalletAccountTron', () => {
     test('should successfully initialize an account for the given seed and path', () => {
       const acc = new WalletAccountTron(SEED, "0'/0/0", { provider: 'https://tron.web.provider/' })
       expect(acc.index).toBe(ACCOUNT.index)
-      acc.dispose()
+      expect(acc.path).toBe(ACCOUNT.path)
+      expect(acc.keyPair).toEqual({
+        privateKey: new Uint8Array(Buffer.from(ACCOUNT.keyPair.privateKey, 'hex')),
+        publicKey: new Uint8Array(Buffer.from(ACCOUNT.keyPair.publicKey, 'hex'))
+      })
     })
 
     test('should throw if the seed phrase is invalid', () => {
@@ -234,8 +238,6 @@ describe('WalletAccountTron', () => {
         recipient: 'TAibbFBAkcNioexXTFWKbp65mgLp7JiqHD',
         amount: 100_000_000
       })).rejects.toThrow('Exceeded maximum fee cost for transfer operations.')
-
-      accountWithMaxFee.dispose()
     })
 
     test('should throw if the account is not connected to tron web', async () => {
