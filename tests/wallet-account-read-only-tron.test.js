@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, jest, test } from '@jest/globals'
 
+import TronWeb from 'tronweb'
+
 const ADDRESS = 'TXngH8bVadn9ZWtKBgjKQcqN1GsZ7A1jcb'
 
 const getBalanceMock = jest.fn()
@@ -10,9 +12,8 @@ const getTransactionInfoMock = jest.fn()
 const getChainParametersMock = jest.fn()
 
 jest.unstable_mockModule('tronweb', () => {
-  const RealTronWeb = jest.requireActual('tronweb')
-  const MockTronWeb = jest.fn().mockImplementation((options) => {
-    const provider = new RealTronWeb(options)
+  const TronWebMock = jest.fn().mockImplementation((options) => {
+    const provider = new TronWeb(options)
 
     provider.trx = {
       getBalance: getBalanceMock,
@@ -29,15 +30,11 @@ jest.unstable_mockModule('tronweb', () => {
     return provider
   })
 
-  Object.assign(MockTronWeb, RealTronWeb)
-  MockTronWeb.address = RealTronWeb.address
-
   return {
-    default: MockTronWeb
+    default: Object.assign(TronWebMock, TronWeb)
   }
 })
 
-const { default: TronWeb } = await import('tronweb')
 const { WalletAccountReadOnlyTron } = await import('../index.js')
 
 describe('WalletAccountReadOnlyTron', () => {
