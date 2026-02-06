@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, describe, expect, jest, test } from '@jest/globals'
 import * as bip39 from 'bip39'
 
+import TronWeb from 'tronweb'
+
 const SEED_PHRASE = 'cook voyage document eight skate token alien guide drink uncle term abuse'
 const INVALID_SEED_PHRASE = 'invalid seed phrase'
 const SEED = bip39.mnemonicToSeedSync(SEED_PHRASE)
@@ -23,28 +25,32 @@ const triggerConstantContractMock = jest.fn()
 const getChainParametersMock = jest.fn()
 
 jest.unstable_mockModule('tronweb', () => {
-  const RealTronWeb = jest.requireActual('tronweb')
-  const MockTronWeb = jest.fn().mockImplementation((options) => {
-    const provider = new RealTronWeb(options)
+  // Partial mock: create a real TronWeb instance to preserve unmocked methods,
+  // then override only the methods that interact with the blockchain
+  const TronWebMock = jest.fn().mockImplementation((options) => {
+    const provider = new TronWeb(options)
 
-    provider.trx.sendRawTransaction = sendRawTransactionMock
-    provider.trx.getAccountResources = getAccountResourcesMock
-    provider.trx.getChainParameters = getChainParametersMock
+    provider.trx = {
+      sendRawTransaction: sendRawTransactionMock,
+      getAccountResources: getAccountResourcesMock,
+      getChainParameters: getChainParametersMock
+    }
 
-    provider.transactionBuilder.sendTrx = sendTrxMock
-    provider.transactionBuilder.triggerSmartContract = triggerSmartContractMock
-    provider.transactionBuilder.triggerConstantContract = triggerConstantContractMock
+    provider.transactionBuilder = {
+      sendTrx: sendTrxMock,
+      triggerSmartContract: triggerSmartContractMock,
+      triggerConstantContract: triggerConstantContractMock
+    }
 
     return provider
   })
 
-  Object.assign(MockTronWeb, RealTronWeb)
-  MockTronWeb.address = RealTronWeb.address
+  // Copies static properties (e.g. address) from the real TronWeb onto the mock constructor
+  TronWebMock.address = TronWeb.address
 
-  return { default: MockTronWeb }
+  return { default: Object.assign(TronWebMock, TronWeb) }
 })
 
-const { default: TronWeb } = await import('tronweb')
 const { WalletAccountTron, WalletAccountReadOnlyTron } = await import('../index.js')
 
 describe('WalletAccountTron', () => {
