@@ -14,13 +14,17 @@ jest.unstable_mockModule('tronweb', () => {
   const MockTronWeb = jest.fn().mockImplementation((options) => {
     const provider = new RealTronWeb(options)
 
-    provider.trx.getBalance = getBalanceMock
-    provider.trx.getAccountResources = getAccountResourcesMock
-    provider.trx.getTransactionInfo = getTransactionInfoMock
-    provider.trx.getChainParameters = getChainParametersMock
+    provider.trx = {
+      getBalance: getBalanceMock,
+      getAccountResources: getAccountResourcesMock,
+      getTransactionInfo: getTransactionInfoMock,
+      getChainParameters: getChainParametersMock
+    }
 
-    provider.transactionBuilder.triggerConstantContract = triggerConstantContractMock
-    provider.transactionBuilder.sendTrx = sendTrxMock
+    provider.transactionBuilder = {
+      triggerConstantContract: triggerConstantContractMock,
+      sendTrx: sendTrxMock
+    }
 
     return provider
   })
