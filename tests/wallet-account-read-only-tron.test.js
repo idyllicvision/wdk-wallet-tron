@@ -130,7 +130,7 @@ describe('WalletAccountReadOnlyTron', () => {
       const EXPECTED_FEE = 202_000n
 
       sendTrxMock.mockResolvedValue({
-        txID: 'mock-tx-id',
+        txID: 'dummy-tx-id',
         raw_data_hex: '0a' + '00'.repeat(100)
       })
 

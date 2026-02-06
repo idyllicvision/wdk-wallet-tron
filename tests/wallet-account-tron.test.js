@@ -117,7 +117,7 @@ describe('WalletAccountTron', () => {
       const DUMMY_TX_ID = 'abc123def456'
 
       sendTrxMock.mockResolvedValue({
-        txID: 'mock-tx-id',
+        txID: 'dummy-tx-id',
         raw_data_hex: '0a' + '00'.repeat(100)
       })
 
@@ -166,7 +166,7 @@ describe('WalletAccountTron', () => {
 
       triggerSmartContractMock.mockResolvedValue({
         transaction: {
-          txID: 'mock-tx-id',
+          txID: 'dummy-tx-id',
           raw_data_hex: '0a' + '00'.repeat(200)
         }
       })
