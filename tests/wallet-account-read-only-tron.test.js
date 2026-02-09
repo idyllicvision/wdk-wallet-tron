@@ -6,14 +6,13 @@ const ADDRESS = 'TXngH8bVadn9ZWtKBgjKQcqN1GsZ7A1jcb'
 
 const getBalanceMock = jest.fn()
 const getAccountResourcesMock = jest.fn()
-const triggerConstantContractMock = jest.fn()
-const sendTrxMock = jest.fn()
 const getTransactionInfoMock = jest.fn()
 const getChainParametersMock = jest.fn()
 
+const triggerConstantContractMock = jest.fn()
+const sendTrxMock = jest.fn()
+
 jest.unstable_mockModule('tronweb', () => {
-  // Partial mock: create a real TronWeb instance to preserve unmocked methods,
-  // then override only the methods that interact with the blockchain
   const TronWebMock = jest.fn().mockImplementation((options) => {
     const provider = new TronWeb(options)
 
@@ -32,9 +31,11 @@ jest.unstable_mockModule('tronweb', () => {
     return provider
   })
 
-  // Copies static properties (e.g. address) from the real TronWeb onto the mock constructor
+  // Assigns static properties of the 'TronWeb' class to the mock constructor:
+  Object.defineProperties(TronWebMock, Object.getOwnPropertyDescriptors(TronWeb))
+
   return {
-    default: Object.assign(TronWebMock, TronWeb)
+    default: TronWebMock
   }
 })
 

@@ -17,16 +17,15 @@ const ACCOUNT = {
   }
 }
 
-const sendTrxMock = jest.fn()
 const sendRawTransactionMock = jest.fn()
 const getAccountResourcesMock = jest.fn()
-const triggerSmartContractMock = jest.fn()
-const triggerConstantContractMock = jest.fn()
 const getChainParametersMock = jest.fn()
 
+const sendTrxMock = jest.fn()
+const triggerSmartContractMock = jest.fn()
+const triggerConstantContractMock = jest.fn()
+
 jest.unstable_mockModule('tronweb', () => {
-  // Partial mock: create a real TronWeb instance to preserve unmocked methods,
-  // then override only the methods that interact with the blockchain
   const TronWebMock = jest.fn().mockImplementation((options) => {
     const provider = new TronWeb(options)
 
@@ -45,10 +44,12 @@ jest.unstable_mockModule('tronweb', () => {
     return provider
   })
 
-  // Copies static properties (e.g. address) from the real TronWeb onto the mock constructor
-  TronWebMock.address = TronWeb.address
+  // Assigns static properties of the 'TronWeb' class to the mock constructor:
+  Object.defineProperties(TronWebMock, Object.getOwnPropertyDescriptors(TronWeb))
 
-  return { default: Object.assign(TronWebMock, TronWeb) }
+  return {
+    default: TronWebMock
+  }
 })
 
 const { WalletAccountTron, WalletAccountReadOnlyTron } = await import('../index.js')
@@ -78,10 +79,11 @@ describe('WalletAccountTron', () => {
     })
 
     test('should successfully initialize an account for the given seed and path', () => {
-      const acc = new WalletAccountTron(SEED, "0'/0/0", { provider: 'https://tron.web.provider/' })
-      expect(acc.index).toBe(ACCOUNT.index)
-      expect(acc.path).toBe(ACCOUNT.path)
-      expect(acc.keyPair).toEqual({
+      const account = new WalletAccountTron(SEED, "0'/0/0", { provider: 'https://tron.web.provider/' })
+
+      expect(account.index).toBe(ACCOUNT.index)
+      expect(account.path).toBe(ACCOUNT.path)
+      expect(account.keyPair).toEqual({
         privateKey: new Uint8Array(Buffer.from(ACCOUNT.keyPair.privateKey, 'hex')),
         publicKey: new Uint8Array(Buffer.from(ACCOUNT.keyPair.publicKey, 'hex'))
       })
@@ -212,7 +214,7 @@ describe('WalletAccountTron', () => {
         ],
         TronWeb.address.toHex(ACCOUNT.address)
       )
-      
+
       expect(sendRawTransactionMock).toHaveBeenCalledWith({
         ...DUMMY_TRIGGER_SMART_CONTRACT_RESULT,
         signature: [EXPECTED_SIGNATURE]

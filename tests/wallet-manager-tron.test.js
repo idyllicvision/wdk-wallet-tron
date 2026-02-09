@@ -7,15 +7,18 @@ const SEED_PHRASE = 'cook voyage document eight skate token alien guide drink un
 const getChainParametersMock = jest.fn()
 
 jest.unstable_mockModule('tronweb', () => {
-  const MockTronWeb = jest.fn().mockReturnValue({
+  const TronWebMock = jest.fn().mockReturnValue({
     trx: {
       getChainParameters: getChainParametersMock
     }
   })
 
-  MockTronWeb.address = TronWeb.address
+  // Assigns static properties of the 'TronWeb' class to the mock constructor:
+  Object.defineProperties(TronWebMock, Object.getOwnPropertyDescriptors(TronWeb))
 
-  return { default: MockTronWeb }
+  return {
+    default: TronWebMock
+  }
 })
 
 const { default: WalletManagerTron, WalletAccountTron } = await import('../index.js')
