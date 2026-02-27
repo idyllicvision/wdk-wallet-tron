@@ -14,7 +14,7 @@
 
 'use strict'
 
-import _TronWeb from 'tronweb'
+import { TronWeb } from 'tronweb'
 
 // eslint-disable-next-line camelcase
 import { keccak_256 } from '@noble/hashes/sha3'
@@ -26,8 +26,6 @@ import * as bip39 from 'bip39'
 import { sodium_memzero } from 'sodium-universal'
 
 import WalletAccountReadOnlyTron from './wallet-account-read-only-tron.js'
-
-const { TronWeb } = _TronWeb
 
 /** @typedef {import('@tetherto/wdk-wallet').IWalletAccount} IWalletAccount */
 

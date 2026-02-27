@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, jest, test } from '@jest/globals'
 
-import TronWeb from 'tronweb'
+import { TronWeb } from 'tronweb'
 
 const ADDRESS = 'TXngH8bVadn9ZWtKBgjKQcqN1GsZ7A1jcb'
 
@@ -16,7 +16,10 @@ jest.unstable_mockModule('tronweb', () => {
   const TronWebMock = jest.fn().mockImplementation((options) => {
     const provider = new TronWeb(options)
 
+    const originalTrx = provider.trx
+
     provider.trx = {
+      verifyMessageV2: originalTrx.verifyMessageV2.bind(originalTrx),
       getBalance: getBalanceMock,
       getAccountResources: getAccountResourcesMock,
       getTransactionInfo: getTransactionInfoMock,
@@ -35,7 +38,8 @@ jest.unstable_mockModule('tronweb', () => {
   Object.defineProperties(TronWebMock, Object.getOwnPropertyDescriptors(TronWeb))
 
   return {
-    default: TronWebMock
+    default: TronWebMock,
+    TronWeb: TronWebMock
   }
 })
 

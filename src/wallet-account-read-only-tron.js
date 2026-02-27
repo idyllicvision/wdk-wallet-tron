@@ -16,9 +16,7 @@
 
 import { WalletAccountReadOnly } from '@tetherto/wdk-wallet'
 
-import _TronWeb from 'tronweb'
-
-const { TronWeb } = _TronWeb
+import { TronWeb } from 'tronweb'
 
 /** @typedef {import('tronweb').Transaction} Transaction */
 /** @typedef {import('tronweb').TriggerSmartContract} TriggerSmartContract */

@@ -16,11 +16,9 @@
 
 import WalletManager from '@tetherto/wdk-wallet'
 
-import _TronWeb from 'tronweb'
+import { TronWeb } from 'tronweb'
 
 import WalletAccountTron from './wallet-account-tron.js'
-
-const { TronWeb } = _TronWeb
 
 /** @typedef {import("@tetherto/wdk-wallet").FeeRates} FeeRates */
 
