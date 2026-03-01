@@ -32,7 +32,8 @@ jest.unstable_mockModule('tronweb', () => {
     verifyMessageV2: jest.fn()
   }
   MockTronWeb.Trx = { verifyMessageV2: jest.fn() }
-  return { default: MockTronWeb, TronWeb: MockTronWeb }
+  const MockTrx = { verifyMessageV2: jest.fn() }
+  return { default: MockTronWeb, TronWeb: MockTronWeb, Trx: MockTrx }
 })
 
 const { default: WalletAccountTron } = await import('../src/wallet-account-tron.js')
@@ -133,7 +134,7 @@ describe('WalletAccountTron', () => {
       }
       mockSendTrx.mockResolvedValue(fakeTx)
       mockGetAccountResources.mockResolvedValue({ freeNetLimit: 1500, freeNetUsed: 0 })
-      mockSendRawTransaction.mockResolvedValue({ txid: 'result_txid' })
+      mockSendRawTransaction.mockResolvedValue({ result: true })
     })
 
     test('calls signer.signTransaction with the txID', async () => {
@@ -144,12 +145,12 @@ describe('WalletAccountTron', () => {
       expect(signTxSpy).toHaveBeenCalledWith('a'.repeat(64))
     })
 
-    test('returns hash from sendRawTransaction', async () => {
+    test('returns txID from signed transaction', async () => {
       jest.spyOn(child, 'signTransaction').mockResolvedValue('sig123')
 
       const result = await account.sendTransaction({ to: 'TRecipient', value: 1000000 })
 
-      expect(result.hash).toBe('result_txid')
+      expect(result.hash).toBe('a'.repeat(64))
     })
 
     test('throws if not connected to TronWeb', async () => {

@@ -10,8 +10,8 @@ const describeIf = SEED ? describe : describe.skip
 describeIf('Integration: WalletManagerTron on Nile testnet', () => {
   let wallet, accountA, accountB
 
-  // Increase timeout for network calls
-  jest.setTimeout(60_000)
+  // Increase timeout for network calls (TRON Nile testnet can be slow)
+  jest.setTimeout(120_000)
 
   test('full flow: create manager → get accounts → send TRX', async () => {
     const root = new SeedSignerTron(SEED)
@@ -50,8 +50,8 @@ describeIf('Integration: WalletManagerTron on Nile testnet', () => {
 
     // Poll for receipt (up to 30s)
     let receipt = null
-    for (let i = 0; i < 15; i++) {
-      await new Promise(resolve => setTimeout(resolve, 2000))
+    for (let i = 0; i < 30; i++) {
+      await new Promise(resolve => setTimeout(resolve, 3000))
       receipt = await accountA.getTransactionReceipt(result.hash)
       if (receipt) break
     }

@@ -14,7 +14,7 @@
 'use strict'
 
 import WalletManager from '@tetherto/wdk-wallet'
-import TronWeb from 'tronweb'
+import { TronWeb } from 'tronweb'
 import WalletAccountTron from './wallet-account-tron.js'
 
 /** @typedef {import('./wallet-account-read-only-tron.js').TronWalletConfig} TronWalletConfig */

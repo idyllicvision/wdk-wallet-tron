@@ -109,9 +109,13 @@ export default class WalletAccountTron extends WalletAccountReadOnlyTron {
     const transaction = await this._tronWeb.transactionBuilder.sendTrx(to, value, address)
     const fee = await this._getBandwidthCost(transaction)
     const signedTransaction = await this._buildSignedTransaction(transaction)
-    const { txid } = await this._tronWeb.trx.sendRawTransaction(signedTransaction)
+    const broadcastResult = await this._tronWeb.trx.sendRawTransaction(signedTransaction)
 
-    return { hash: txid, fee: BigInt(fee) }
+    if (!broadcastResult.result) {
+      throw new Error(`Transaction broadcast failed: ${broadcastResult.code} - ${broadcastResult.message}`)
+    }
+
+    return { hash: signedTransaction.txID, fee: BigInt(fee) }
   }
 
   /**
@@ -144,9 +148,13 @@ export default class WalletAccountTron extends WalletAccountReadOnlyTron {
       .triggerSmartContract(token, 'transfer(address,uint256)', options, parameters, addressHex)
 
     const signedTransaction = await this._buildSignedTransaction(transaction)
-    const { txid } = await this._tronWeb.trx.sendRawTransaction(signedTransaction)
+    const broadcastResult = await this._tronWeb.trx.sendRawTransaction(signedTransaction)
 
-    return { hash: txid, fee }
+    if (!broadcastResult.result) {
+      throw new Error(`Transaction broadcast failed: ${broadcastResult.code} - ${broadcastResult.message}`)
+    }
+
+    return { hash: signedTransaction.txID, fee }
   }
 
   /**
