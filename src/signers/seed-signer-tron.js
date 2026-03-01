@@ -133,7 +133,7 @@ export default class SeedSignerTron {
     const hash = keccak_256(Buffer.concat([prefix, messageBytes]))
 
     // format: 'recovered' returns [v, r(32), s(32)] — 65 bytes total
-    const recSig = secp256k1.sign(hash, this._account.privateKey, { format: 'recovered' })
+    const recSig = secp256k1.sign(hash, this._account.privateKey, { prehash: false, format: 'recovered' })
     const v = recSig[0]
     const rs = recSig.slice(1) // 64 bytes r+s
     const bytes = new Uint8Array([...rs, 27 + v])
@@ -152,8 +152,8 @@ export default class SeedSignerTron {
 
     const txBytes = Buffer.from(txID, 'hex')
     // format: 'recovered' returns [v, r(32), s(32)] — 65 bytes total
-    const recSig = secp256k1.sign(txBytes, this._account.privateKey, { lowS: true, format: 'recovered' })
-    const v = recSig[0]
+    const recSig = secp256k1.sign(txBytes, this._account.privateKey, { lowS: true, prehash: false, format: 'recovered' })
+    const v = recSig[0] + 27 // TRON uses Ethereum-compatible v: 27 or 28
     const r = Buffer.from(recSig.slice(1, 33)).toString('hex')
     const s = Buffer.from(recSig.slice(33, 65)).toString('hex')
 

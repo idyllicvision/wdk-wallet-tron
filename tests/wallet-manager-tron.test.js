@@ -9,7 +9,7 @@ jest.unstable_mockModule('tronweb', () => {
     }
   }))
   MockTronWeb.address = { fromHex: jest.fn(h => 'T' + h.slice(2, 10)) }
-  return { default: MockTronWeb, TronWeb: MockTronWeb }
+  return { default: MockTronWeb, TronWeb: MockTronWeb, Trx: { verifyMessageV2: jest.fn() } }
 })
 
 const { default: WalletManagerTron } = await import('../src/wallet-manager-tron.js')
