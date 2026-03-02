@@ -21,6 +21,64 @@ import * as bip39 from 'bip39'
 import { TronWeb } from 'tronweb'
 // eslint-disable-next-line camelcase
 import { sodium_memzero } from 'sodium-universal'
+import { NotImplementedError } from '@tetherto/wdk-wallet'
+
+/**
+ * Tron-specific signer interface.
+ *
+ * Extends the base ISigner contract with TRON signing capabilities.
+ * No signTypedData — TRON has no EIP-712 equivalent.
+ *
+ * @interface
+ */
+export class ISignerTron {
+  /** @type {boolean} */
+  get isActive () { throw new NotImplementedError('isActive') }
+
+  /** @type {boolean} */
+  get isRoot () { throw new NotImplementedError('isRoot') }
+
+  /** @type {number|undefined} */
+  get index () { throw new NotImplementedError('index') }
+
+  /** @type {string|undefined} */
+  get path () { throw new NotImplementedError('path') }
+
+  /** @type {string|undefined} */
+  get address () { throw new NotImplementedError('address') }
+
+  /**
+   * @type {{ privateKey: Uint8Array|null, publicKey: Uint8Array|null }}
+   */
+  get keyPair () { throw new NotImplementedError('keyPair') }
+
+  /**
+   * Derive a child signer from a relative BIP-44 path (e.g. "0'/0/0").
+   * @param {string} relPath
+   * @returns {ISignerTron}
+   */
+  derive (relPath) { throw new NotImplementedError('derive(relPath)') }
+
+  /** @returns {Promise<string>} */
+  async getAddress () { throw new NotImplementedError('getAddress()') }
+
+  /**
+   * Sign a plain text message using the TRON personal sign prefix.
+   * @param {string} message
+   * @returns {Promise<string>} hex signature with 0x prefix
+   */
+  async sign (message) { throw new NotImplementedError('sign(message)') }
+
+  /**
+   * Sign a raw TRON transaction by its txID (hex string).
+   * @param {string} txID - The transaction ID hex string (32 bytes).
+   * @returns {Promise<string>} compact hex signature (r+s+v, no 0x prefix)
+   */
+  async signTransaction (txID) { throw new NotImplementedError('signTransaction(txID)') }
+
+  /** Clear secret material from memory. */
+  dispose () { throw new NotImplementedError('dispose()') }
+}
 
 const BIP_44_TRON_PATH_PREFIX = "m/44'/195'"
 

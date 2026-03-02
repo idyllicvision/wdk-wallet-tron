@@ -17,4 +17,3 @@
  * - `SeedSignerTron`: derives accounts from a BIP-39 seed (BIP-44 m/44'/195' path).
  */
 export { default, default as SeedSignerTron } from './seed-signer-tron.js'
-export { ISignerTron } from './interface.js'

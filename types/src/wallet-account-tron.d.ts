@@ -22,7 +22,7 @@ export default class WalletAccountTron extends WalletAccountReadOnlyTron impleme
      * @param {import('./signers/interface.js').ISignerTron} signer - A child signer (not root).
      * @param {TronWalletConfig} [config]
      */
-    constructor(signer: import("./signers/interface.js").ISignerTron, config?: TronWalletConfig);
+    constructor(signer: any, config?: TronWalletConfig);
     /** @protected */
     protected _config: import("./wallet-account-read-only-tron.js").TronWalletConfig;
     /** @private */

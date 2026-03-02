@@ -11,7 +11,7 @@ export default class WalletManagerTron extends WalletManager {
      * @param {import('./signers/interface.js').ISignerTron} signer - Root signer.
      * @param {TronWalletConfig} [config]
      */
-    constructor(signer: import("./signers/interface.js").ISignerTron, config?: TronWalletConfig);
+    constructor(signer: any, config?: TronWalletConfig);
     /** @protected @type {import('tronweb').TronWeb|undefined} */
     protected _tronWeb: import("tronweb").TronWeb | undefined;
     /**
