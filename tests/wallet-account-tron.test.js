@@ -1,39 +1,41 @@
 import { describe, test, expect, beforeEach, jest } from '@jest/globals'
 
-// Mock tronweb before importing the module under test.
-// Must export both `default` (constructable, for WalletAccountReadOnlyTron) and
-// named `TronWeb` (for SeedSignerTron's address derivation).
-const mockSendTrx = jest.fn()
-const mockTriggerSmartContract = jest.fn()
-const mockTriggerConstantContract = jest.fn()
-const mockSendRawTransaction = jest.fn()
-const mockGetAccountResources = jest.fn()
-const mockGetChainParameters = jest.fn()
-const mockToHex = jest.fn(addr => '41' + addr.slice(2))
+import { TronWeb, Trx } from 'tronweb'
+
+const sendRawTransactionMock = jest.fn()
+const getAccountResourcesMock = jest.fn()
+const getChainParametersMock = jest.fn()
+
+const sendTrxMock = jest.fn()
+const triggerSmartContractMock = jest.fn()
+const triggerConstantContractMock = jest.fn()
 
 jest.unstable_mockModule('tronweb', () => {
-  const MockTronWeb = jest.fn().mockImplementation(() => ({
-    transactionBuilder: {
-      sendTrx: mockSendTrx,
-      triggerSmartContract: mockTriggerSmartContract,
-      triggerConstantContract: mockTriggerConstantContract
-    },
-    trx: {
-      sendRawTransaction: mockSendRawTransaction,
-      getAccountResources: mockGetAccountResources,
-      getChainParameters: mockGetChainParameters
-    },
-    address: { toHex: mockToHex },
-    toBigNumber: jest.fn(v => ({ toFixed: () => v }))
-  }))
-  MockTronWeb.address = {
-    fromHex: jest.fn(h => 'T' + h.slice(2, 10)),
-    toHex: mockToHex,
-    verifyMessageV2: jest.fn()
+  const TronWebMock = jest.fn().mockImplementation((options) => {
+    const provider = new TronWeb(options)
+
+    provider.trx = {
+      sendRawTransaction: sendRawTransactionMock,
+      getAccountResources: getAccountResourcesMock,
+      getChainParameters: getChainParametersMock
+    }
+
+    provider.transactionBuilder = {
+      sendTrx: sendTrxMock,
+      triggerSmartContract: triggerSmartContractMock,
+      triggerConstantContract: triggerConstantContractMock
+    }
+
+    return provider
+  })
+
+  // Assigns static properties of the 'TronWeb' class to the mock constructor:
+  Object.defineProperties(TronWebMock, Object.getOwnPropertyDescriptors(TronWeb))
+
+  return {
+    TronWeb: TronWebMock,
+    Trx
   }
-  MockTronWeb.Trx = { verifyMessageV2: jest.fn() }
-  const MockTrx = { verifyMessageV2: jest.fn() }
-  return { default: MockTronWeb, TronWeb: MockTronWeb, Trx: MockTrx }
 })
 
 const { default: WalletAccountTron } = await import('../src/wallet-account-tron.js')
@@ -132,9 +134,9 @@ describe('WalletAccountTron', () => {
         txID: 'a'.repeat(64),
         raw_data_hex: 'b'.repeat(100)
       }
-      mockSendTrx.mockResolvedValue(fakeTx)
-      mockGetAccountResources.mockResolvedValue({ freeNetLimit: 1500, freeNetUsed: 0 })
-      mockSendRawTransaction.mockResolvedValue({ result: true })
+      sendTrxMock.mockResolvedValue(fakeTx)
+      getAccountResourcesMock.mockResolvedValue({ freeNetLimit: 1500, freeNetUsed: 0 })
+      sendRawTransactionMock.mockResolvedValue({ result: true })
     })
 
     test('calls signer.signTransaction with the txID', async () => {

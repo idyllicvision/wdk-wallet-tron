@@ -1,15 +1,23 @@
-import { describe, test, expect, beforeEach, afterEach, jest } from '@jest/globals'
+import { afterEach, beforeEach, describe, expect, jest, test } from '@jest/globals'
+
+import { TronWeb, Trx } from 'tronweb'
 
 jest.unstable_mockModule('tronweb', () => {
-  const MockTronWeb = jest.fn().mockImplementation(() => ({
+  const TronWebMock = jest.fn().mockImplementation(() => ({
     trx: {
       getChainParameters: jest.fn().mockResolvedValue([
         { key: 'getTransactionFee', value: 1000 }
       ])
     }
   }))
-  MockTronWeb.address = { fromHex: jest.fn(h => 'T' + h.slice(2, 10)) }
-  return { default: MockTronWeb, TronWeb: MockTronWeb, Trx: { verifyMessageV2: jest.fn() } }
+
+  // Assigns static properties of the 'TronWeb' class to the mock constructor:
+  Object.defineProperties(TronWebMock, Object.getOwnPropertyDescriptors(TronWeb))
+
+  return {
+    TronWeb: TronWebMock,
+    Trx
+  }
 })
 
 const { default: WalletManagerTron } = await import('../src/wallet-manager-tron.js')
@@ -27,7 +35,7 @@ describe('WalletManagerTron', () => {
   })
 
   afterEach(() => {
-    // wallet.dispose() — skip to avoid sodium issues in test env
+    wallet.dispose()
   })
 
   describe('getAccount()', () => {

@@ -1,11 +1,7 @@
 import { createRequire } from 'module'
 import { beforeEach, describe, expect, jest, test } from '@jest/globals'
 
-// Load real TronWeb statics (address utilities, Trx) via CJS to bypass Jest's
-// ESM mock registry — avoids the circular reference that arises when the mock
-// factory itself references a static import of the mocked module.
-const _require = createRequire(import.meta.url)
-const { TronWeb: RealTronWeb, Trx: RealTrx } = _require('tronweb')
+import { TronWeb as RealTronWeb, Trx as RealTrx } from 'tronweb'
 
 const ADDRESS = 'TXngH8bVadn9ZWtKBgjKQcqN1GsZ7A1jcb'
 
@@ -70,6 +66,14 @@ describe('WalletAccountReadOnlyTron', () => {
 
     test('should return false for an invalid signature', async () => {
       const result = await account.verify('Another message.', SIGNATURE)
+
+      expect(result).toBe(false)
+    })
+
+    test('should return false for an address with invalid casing', async () => {
+      const lowercasedAddressAccount = new WalletAccountReadOnlyTron(ADDRESS.toLowerCase())
+
+      const result = await lowercasedAddressAccount.verify(MESSAGE, SIGNATURE)
 
       expect(result).toBe(false)
     })
