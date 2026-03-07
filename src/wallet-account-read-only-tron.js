@@ -125,7 +125,7 @@ export default class WalletAccountReadOnlyTron extends WalletAccountReadOnly {
 
     const balance = this._tronWeb.toBigNumber('0x' + result.constant_result[0])
 
-    return BigInt(balance)
+    return BigInt(balance.toFixed(0))
   }
 
   /**
